@@ -128,8 +128,7 @@ app.post('/signupSubmit', async (req, res) => {
 
     res.redirect('/members');
     return;
-    
-    
+
 });
 /* END OF SIGNING UP */
 
@@ -146,9 +145,9 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/loggingin', async (req, res) => {
-    var username = req.body.username;
     var email = req.body.email;
     var password = req.body.password;
+    const user = await userCollection.findOne({ email: email });
 
     const schema = Joi.string().email().required();
     const validationResult = schema.validate(email);
@@ -178,7 +177,7 @@ app.post('/loggingin', async (req, res) => {
     if (await bcrypt.compare(password, result[0].password)) {
         console.log("correct password");
         req.session.authenticated = true;
-        req.session.username = username;
+        req.session.username = user.username;
         req.session.cookie.maxAge = expireTime;
 
         res.redirect('/members');
